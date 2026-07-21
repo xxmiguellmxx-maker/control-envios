@@ -1,57 +1,25 @@
-/************************************************
- * CONTROL DE ENVÍOS
- * APP.JS
- * Versión 1.0
- ************************************************/
-
 "use strict";
 
-let scanner = null;
-let escaneando = false;
-let ultimaGuia = "";
+document.addEventListener("DOMContentLoaded", iniciarSistema);
 
-/**
- * Inicia la aplicación
- */
-document.addEventListener("DOMContentLoaded", inicializarApp);
-
-function inicializarApp() {
+function iniciarSistema(){
 
     console.log(CONFIG.APP_NAME);
+
     console.log(CONFIG.VERSION);
 
-    const boton = document.getElementById("btnEscanear");
+    mostrarMensaje("Sistema iniciado.","info");
 
-    boton.addEventListener("click", iniciarScanner);
+    document
 
-}
+        .getElementById("btnEscanear")
 
-/**
- * Mostrar mensajes
- */
-function mostrarMensaje(texto, tipo = "ok") {
+        .addEventListener("click", function(){
 
-    const mensaje = document.getElementById("mensaje");
+            bloquearBoton();
 
-    mensaje.style.display = "block";
+            mostrarMensaje("Preparando cámara...","info");
 
-    mensaje.className = tipo;
-
-    mensaje.textContent = texto;
-
-}
-
-/**
- * Iniciar cámara
- */
-async function iniciarScanner() {
-
-    if (escaneando) return;
-
-    escaneando = true;
-
-    mostrarMensaje("Abriendo cámara...");
-
-    console.log("Inicializando escáner...");
+        });
 
 }
