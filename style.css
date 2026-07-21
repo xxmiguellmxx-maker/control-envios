@@ -84,3 +84,18 @@ button:hover{
     background:#FFCDD2;
     color:#B71C1C;
 }
+button:disabled{
+
+    background:#9E9E9E;
+
+    cursor:not-allowed;
+
+}
+
+.info{
+
+    background:#E3F2FD;
+
+    color:#1565C0;
+
+}
