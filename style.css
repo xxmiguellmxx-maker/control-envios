@@ -60,9 +60,16 @@ button:hover{
     background:#0D47A1;
 }
 
+button:disabled{
+    background:#9E9E9E;
+    cursor:not-allowed;
+}
+
 #reader{
-    margin-top:25px;
     width:100%;
+    margin-top:25px;
+    overflow:hidden;
+    border-radius:12px;
 }
 
 #mensaje{
@@ -84,18 +91,24 @@ button:hover{
     background:#FFCDD2;
     color:#B71C1C;
 }
-button:disabled{
-
-    background:#9E9E9E;
-
-    cursor:not-allowed;
-
-}
 
 .info{
-
     background:#E3F2FD;
-
     color:#1565C0;
+}
+
+@media (max-width:600px){
+
+    .container{
+        padding:20px;
+    }
+
+    h1{
+        font-size:24px;
+    }
+
+    button{
+        font-size:16px;
+    }
 
 }
