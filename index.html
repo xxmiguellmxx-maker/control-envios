@@ -3,55 +3,54 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Control de Envíos</title>
+    <title>Control de Envíos</title>
 
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-<h1>📦 Control de Envíos</h1>
+        <h1>📦 Control de Envíos</h1>
 
-<label>
+        <label for="usuario">
 
-Usuario
+            Usuario
 
-</label>
+        </label>
 
-<select id="usuario">
+        <select id="usuario">
 
-<option>Miguel</option>
+            <option value="Miguel">Miguel</option>
+            <option value="Usuario 2">Usuario 2</option>
+            <option value="Usuario 3">Usuario 3</option>
 
-<option>Usuario 2</option>
+        </select>
 
-<option>Usuario 3</option>
+        <button id="btnEscanear">
 
-</select>
+            Iniciar Escáner
 
-<button id="btnEscanear">
+        </button>
 
-Iniciar Escáner
+        <div id="reader"></div>
 
-</button>
+        <div id="mensaje"></div>
 
-<div id="reader"></div>
+    </div>
 
-<div id="mensaje"></div>
+    <!-- Configuración del sistema -->
+    <script src="config.js"></script>
 
-</div>
-
-<script src="app.js"></script>
+    <!-- Lógica principal -->
+    <script src="app.js"></script>
 
 </body>
 
 </html>
-<script src="config.js"></script>
-<script src="app.js"></script>
