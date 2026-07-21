@@ -100,69 +100,11 @@ async function detenerScanner() {
 
 }
 
-let enviando = false;
-let ultimaGuia = "";
+function codigoDetectado(texto) {
 
-async function codigoDetectado(texto) {
+    mostrarMensaje("Código leído: " + texto, "ok");
 
-    if (enviando) return;
-
-    if (texto === ultimaGuia) return;
-
-    ultimaGuia = texto;
-
-    enviando = true;
-
-    mostrarMensaje("Enviando guía...", "ok");
-
-    try {
-
-        const respuesta = await fetch(CONFIG.API_URL, {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-
-                guia: texto,
-
-                usuario: document.getElementById("usuario").value
-
-            })
-
-        });
-
-        const datos = await respuesta.json();
-
-        if (datos.ok) {
-
-            mostrarMensaje(datos.mensaje, "ok");
-
-        } else {
-
-            mostrarMensaje(datos.mensaje, "error");
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        mostrarMensaje("Error de conexión.", "error");
-
-    }
-
-    setTimeout(() => {
-
-        enviando = false;
-        ultimaGuia = "";
-
-    }, 1000);
-
-}
+    console.log(texto);
 
 }
 
