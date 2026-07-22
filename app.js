@@ -1,7 +1,7 @@
 /************************************************
  * CONTROL DE ENVÍOS
  * APP.JS
- * VERSIÓN 2.0
+ * VERSIÓN 3.0
  ************************************************/
 
 "use strict";
@@ -10,12 +10,13 @@ let scanner = null;
 let escaneando = false;
 let enviando = false;
 let ultimaGuia = "";
+
 document.addEventListener("DOMContentLoaded", iniciarApp);
 
 function iniciarApp() {
 
     console.log(CONFIG.APP_NAME);
-    console.log(CONFIG.VERSION);
+    console.log("Versión:", CONFIG.VERSION);
 
     document
         .getElementById("btnEscanear")
@@ -26,13 +27,10 @@ function iniciarApp() {
 async function toggleScanner() {
 
     if (escaneando) {
-
-        detenerScanner();
-        return;
-
+        await detenerScanner();
+    } else {
+        await iniciarScanner();
     }
-
-    iniciarScanner();
 
 }
 
@@ -40,56 +38,68 @@ async function iniciarScanner() {
 
     try {
 
-    const parametros = new URLSearchParams();
+        mostrarMensaje("Abriendo cámara...", "ok");
 
-    parametros.append("guia", texto);
-    parametros.append("usuario", document.getElementById("usuario").value);
+        scanner = new Html5Qrcode("reader");
 
-    const respuesta = await fetch(CONFIG.API_URL, {
+        await scanner.start(
+            {
+                facingMode: {
+                    ideal: "environment"
+                }
+            },
+            {
+                fps: 10,
+                qrbox: {
+                    width: 280,
+                    height: 180
+                }
+            },
+            codigoDetectado,
+            errorEscaneo
+        );
 
-        method: "POST",
+        escaneando = true;
 
-        body: parametros
+        document.getElementById("btnEscanear").textContent =
+            "Detener Escáner";
 
-    });
+        mostrarMensaje("Escáner listo.", "ok");
 
-    const resultado = await respuesta.json();
+    } catch (error) {
 
-    if (resultado.ok) {
+        console.error(error);
 
-        mostrarMensaje(resultado.mensaje, "ok");
-
-    } else {
-
-        mostrarMensaje(resultado.mensaje, "error");
+        mostrarMensaje("No fue posible abrir la cámara.", "error");
 
     }
-
-} catch (error) {
-
-    console.error(error);
-
-    mostrarMensaje("Error de conexión con el servidor.", "error");
-
-}
 
 }
 
 async function detenerScanner() {
 
-    if (!scanner) return;
+    try {
 
-    await scanner.stop();
+        if (scanner) {
 
-    await scanner.clear();
+            await scanner.stop();
+            await scanner.clear();
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
 
     scanner = null;
-
     escaneando = false;
 
     document.getElementById("reader").innerHTML = "";
 
-    document.getElementById("btnEscanear").textContent = "Iniciar Escáner";
+    document.getElementById("btnEscanear").textContent =
+        "Iniciar Escáner";
 
     mostrarMensaje("Escáner detenido.", "ok");
 
@@ -102,36 +112,35 @@ async function codigoDetectado(texto) {
     if (texto === ultimaGuia) return;
 
     ultimaGuia = texto;
-
     enviando = true;
 
     mostrarMensaje("Registrando guía...", "ok");
 
     try {
 
-        const datos = new URLSearchParams();
+        const parametros = new URLSearchParams();
 
-datos.append("guia", texto);
-datos.append("usuario", document.getElementById("usuario").value);
+        parametros.append("guia", texto);
 
-const respuesta = await fetch(CONFIG.API_URL, {
+        parametros.append(
+            "usuario",
+            document.getElementById("usuario").value
+        );
 
-    method: "POST",
+        const respuesta = await fetch(CONFIG.API_URL, {
+            method: "POST",
+            body: parametros
+        });
 
-    body: datos
+        const resultado = await respuesta.json();
 
-});
+        if (resultado.ok) {
 
-
-        const datos = await respuesta.json();
-
-        if (datos.ok) {
-
-            mostrarMensaje(datos.mensaje, "ok");
+            mostrarMensaje(resultado.mensaje, "ok");
 
         } else {
 
-            mostrarMensaje(datos.mensaje, "error");
+            mostrarMensaje(resultado.mensaje, "error");
 
         }
 
@@ -154,10 +163,11 @@ const respuesta = await fetch(CONFIG.API_URL, {
 
 function errorEscaneo(error) {
 
-    // Se ignoran los errores normales de búsqueda.
+    // Se ignoran los errores normales del escáner.
+
 }
 
-function mostrarMensaje(texto, tipo = "ok") {
+function mostrarMensaje(texto, tipo) {
 
     const mensaje = document.getElementById("mensaje");
 
