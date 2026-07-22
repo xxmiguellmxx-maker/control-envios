@@ -1,7 +1,7 @@
 /************************************************
  * CONTROL DE ENVÍOS
  * APP.JS
- * VERSIÓN 3.2
+ * VERSIÓN 3.3
  ************************************************/
 
 "use strict";
@@ -18,9 +18,14 @@ function iniciarApp() {
     console.log(CONFIG.APP_NAME);
     console.log("Versión:", CONFIG.VERSION);
 
-    document
-        .getElementById("btnEscanear")
-        .addEventListener("click", toggleScanner);
+    const boton = document.getElementById("btnEscanear");
+
+    if (!boton) {
+        console.error("No existe el botón btnEscanear");
+        return;
+    }
+
+    boton.addEventListener("click", toggleScanner);
 
 }
 
@@ -136,13 +141,20 @@ async function codigoDetectado(texto) {
         console.log("Status Text:", respuesta.statusText);
         console.log("OK:", respuesta.ok);
 
-        const textoRespuesta = await respuesta.text();
+        if (!respuesta.ok) {
+            throw new Error("Error HTTP: " + respuesta.status);
+        }
+
+        const datos = await respuesta.json();
 
         console.log("Contenido recibido:");
-        console.log(textoRespuesta);
+        console.log(datos);
         console.log("============================================");
 
-        mostrarMensaje(textoRespuesta, "ok");
+        mostrarMensaje(
+            datos.mensaje,
+            datos.ok ? "ok" : "error"
+        );
 
     } catch (error) {
 
@@ -173,6 +185,8 @@ function errorEscaneo(error) {
 function mostrarMensaje(texto, tipo = "ok") {
 
     const mensaje = document.getElementById("mensaje");
+
+    if (!mensaje) return;
 
     mensaje.style.display = "block";
     mensaje.className = tipo;
