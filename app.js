@@ -8,7 +8,8 @@
 
 let scanner = null;
 let escaneando = false;
-
+let enviando = false;
+let ultimaGuia = "";
 document.addEventListener("DOMContentLoaded", iniciarApp);
 
 function iniciarApp() {
@@ -100,11 +101,66 @@ async function detenerScanner() {
 
 }
 
-function codigoDetectado(texto) {
+async function codigoDetectado(texto) {
 
-    mostrarMensaje("Código leído: " + texto, "ok");
+    if (enviando) return;
 
-    console.log(texto);
+    if (texto === ultimaGuia) return;
+
+    ultimaGuia = texto;
+
+    enviando = true;
+
+    mostrarMensaje("Registrando guía...", "ok");
+
+    try {
+
+        const respuesta = await fetch(CONFIG.API_URL, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                guia: texto,
+
+                usuario: document.getElementById("usuario").value
+
+            })
+
+        });
+
+        const datos = await respuesta.json();
+
+        if (datos.ok) {
+
+            mostrarMensaje(datos.mensaje, "ok");
+
+        } else {
+
+            mostrarMensaje(datos.mensaje, "error");
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        mostrarMensaje("Error de conexión con el servidor.", "error");
+
+    }
+
+    setTimeout(() => {
+
+        enviando = false;
+        ultimaGuia = "";
+
+    }, 1000);
+
+}
 
 }
 
