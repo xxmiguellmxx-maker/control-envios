@@ -134,15 +134,7 @@ async function codigoDetectado(texto) {
 
 console.log("Respuesta del servidor:", textoRespuesta);
 
-        if (resultado.ok) {
-
-            mostrarMensaje(resultado.mensaje, "ok");
-
-        } else {
-
-            mostrarMensaje(resultado.mensaje, "error");
-
-        }
+mostrarMensaje(textoRespuesta, "ok");
 
     } catch (error) {
 
