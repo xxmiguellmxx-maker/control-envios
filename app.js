@@ -122,7 +122,6 @@ const respuesta = await fetch(CONFIG.API_URL, {
 
 });
 
-        });
 
         const datos = await respuesta.json();
 
