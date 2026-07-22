@@ -115,21 +115,18 @@ async function codigoDetectado(texto) {
 
     try {
 
-        const respuesta = await fetch(CONFIG.API_URL, {
+        const datos = new URLSearchParams();
 
-            method: "POST",
+datos.append("guia", texto);
+datos.append("usuario", document.getElementById("usuario").value);
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+const respuesta = await fetch(CONFIG.API_URL, {
 
-            body: JSON.stringify({
+    method: "POST",
 
-                guia: texto,
+    body: datos
 
-                usuario: document.getElementById("usuario").value
-
-            })
+});
 
         });
 
