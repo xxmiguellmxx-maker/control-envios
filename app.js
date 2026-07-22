@@ -40,44 +40,38 @@ async function iniciarScanner() {
 
     try {
 
-        mostrarMensaje("Abriendo cámara...", "ok");
+    const parametros = new URLSearchParams();
 
-        scanner = new Html5Qrcode("reader");
+    parametros.append("guia", texto);
+    parametros.append("usuario", document.getElementById("usuario").value);
 
-        await scanner.start(
+    const respuesta = await fetch(CONFIG.API_URL, {
 
-            {
-                facingMode: "environment"
-            },
+        method: "POST",
 
-            {
-                fps: 10,
-                qrbox: {
-                    width: 280,
-                    height: 180
-                }
-            },
+        body: parametros
 
-            codigoDetectado,
+    });
 
-            errorEscaneo
+    const resultado = await respuesta.json();
 
-        );
+    if (resultado.ok) {
 
-        escaneando = true;
+        mostrarMensaje(resultado.mensaje, "ok");
 
-        const boton = document.getElementById("btnEscanear");
+    } else {
 
-        boton.textContent = "Detener Escáner";
+        mostrarMensaje(resultado.mensaje, "error");
 
     }
-    catch (error) {
 
-        console.error(error);
+} catch (error) {
 
-        mostrarMensaje("No fue posible abrir la cámara.", "error");
+    console.error(error);
 
-    }
+    mostrarMensaje("Error de conexión con el servidor.", "error");
+
+}
 
 }
 
