@@ -4,7 +4,7 @@
 
 const CONFIG = {
 
-    API_URL: "https://script.google.com/macros/s/AKfycbwCqfI-hK4DkV5APR2gCVML-s1vEZfGrYxakPYSsT8Bx4cwYIVo1OoSQOfjOz2HKsQ/exec",
+    API_URL: "https://script.google.com/macros/s/AKfycbwu8sYOzxWJZIjKGY1itJ1evrxZ34XsWD2UacgIbVtUOXeht_RzSvXxUbGqOFBgeQqA/exec",
 
     APP_NAME: "Control de Envíos",
 
