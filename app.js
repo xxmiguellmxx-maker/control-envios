@@ -162,8 +162,6 @@ async function codigoDetectado(texto) {
 
 }
 
-}
-
 function errorEscaneo(error) {
 
     // Se ignoran los errores normales de búsqueda.
