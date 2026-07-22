@@ -8,8 +8,7 @@
 
 let scanner = null;
 let escaneando = false;
-let enviando = false;
-let ultimaGuia = "";
+
 document.addEventListener("DOMContentLoaded", iniciarApp);
 
 function iniciarApp() {
@@ -99,7 +98,7 @@ async function detenerScanner() {
 
     mostrarMensaje("Escáner detenido.", "ok");
 
-}
+function codigoDetectado(texto) {}
 
 let enviando = false;
 let ultimaGuia = "";
