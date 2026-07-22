@@ -26,6 +26,8 @@ function iniciarApp() {
 
 async function toggleScanner() {
 
+    console.log("CLICK");
+
     if (escaneando) {
         await detenerScanner();
     } else {
