@@ -43,11 +43,9 @@ async function iniciarScanner() {
         scanner = new Html5Qrcode("reader");
 
         await scanner.start(
-            {
-                facingMode: {
-                    ideal: "environment"
-                }
-            },
+    {
+        facingMode: "environment"
+    },
             {
                 fps: 10,
                 qrbox: {
