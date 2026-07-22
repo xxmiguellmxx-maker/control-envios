@@ -130,7 +130,9 @@ async function codigoDetectado(texto) {
             body: parametros
         });
 
-        const resultado = await respuesta.json();
+        const textoRespuesta = await respuesta.text();
+
+console.log("Respuesta del servidor:", textoRespuesta);
 
         if (resultado.ok) {
 
