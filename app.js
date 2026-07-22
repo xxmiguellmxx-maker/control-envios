@@ -1,108 +1,3 @@
-/************************************************
- * CONTROL DE ENVÍOS
- * APP.JS
- * VERSIÓN 3.1
- ************************************************/
-
-"use strict";
-
-let scanner = null;
-let escaneando = false;
-let enviando = false;
-let ultimaGuia = "";
-
-document.addEventListener("DOMContentLoaded", iniciarApp);
-
-function iniciarApp() {
-
-    console.log(CONFIG.APP_NAME);
-    console.log("Versión:", CONFIG.VERSION);
-
-    document
-        .getElementById("btnEscanear")
-        .addEventListener("click", toggleScanner);
-
-}
-
-async function toggleScanner() {
-
-    if (escaneando) {
-        await detenerScanner();
-    } else {
-        await iniciarScanner();
-    }
-
-}
-
-async function iniciarScanner() {
-
-    try {
-
-        mostrarMensaje("Abriendo cámara...", "ok");
-
-        scanner = new Html5Qrcode("reader");
-
-        await scanner.start(
-            {
-                facingMode: "environment"
-            },
-            {
-                fps: 10,
-                qrbox: {
-                    width: 280,
-                    height: 180
-                }
-            },
-            codigoDetectado,
-            errorEscaneo
-        );
-
-        escaneando = true;
-
-        document.getElementById("btnEscanear").textContent =
-            "Detener Escáner";
-
-        mostrarMensaje("Escáner listo.", "ok");
-
-    } catch (error) {
-
-        console.error(error);
-
-        mostrarMensaje("No fue posible abrir la cámara.", "error");
-
-    }
-
-}
-
-async function detenerScanner() {
-
-    try {
-
-        if (scanner) {
-
-            await scanner.stop();
-            await scanner.clear();
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-    }
-
-    scanner = null;
-    escaneando = false;
-
-    document.getElementById("reader").innerHTML = "";
-
-    document.getElementById("btnEscanear").textContent =
-        "Iniciar Escáner";
-
-    mostrarMensaje("Escáner detenido.", "ok");
-
-}
-
 async function codigoDetectado(texto) {
 
     if (enviando) return;
@@ -129,25 +24,27 @@ async function codigoDetectado(texto) {
             body: parametros
         });
 
-        const resultado = await respuesta.json();
+        console.log("========== RESPUESTA DEL SERVIDOR ==========");
+        console.log("Status:", respuesta.status);
+        console.log("Status Text:", respuesta.statusText);
+        console.log("OK:", respuesta.ok);
 
-        console.log(resultado);
+        const textoRespuesta = await respuesta.text();
 
-        if (resultado.ok) {
+        console.log("Contenido recibido:");
+        console.log(textoRespuesta);
+        console.log("============================================");
 
-            mostrarMensaje(resultado.mensaje, "ok");
-
-        } else {
-
-            mostrarMensaje(resultado.mensaje, "error");
-
-        }
+        mostrarMensaje(textoRespuesta, "ok");
 
     } catch (error) {
 
+        console.error("========== ERROR ==========");
         console.error(error);
+        console.error("Mensaje:", error.message);
+        console.error("===========================");
 
-        mostrarMensaje("Error de conexión con el servidor.", "error");
+        mostrarMensaje("ERROR: " + error.message, "error");
 
     }
 
@@ -157,21 +54,5 @@ async function codigoDetectado(texto) {
         ultimaGuia = "";
 
     }, 1000);
-
-}
-
-function errorEscaneo(error) {
-
-    // Ignorar errores normales del escáner
-
-}
-
-function mostrarMensaje(texto, tipo = "ok") {
-
-    const mensaje = document.getElementById("mensaje");
-
-    mensaje.style.display = "block";
-    mensaje.className = tipo;
-    mensaje.textContent = texto;
 
 }
