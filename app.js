@@ -1,7 +1,7 @@
 /************************************************
  * CONTROL DE ENVÍOS
  * APP.JS
- * VERSIÓN 3.0
+ * VERSIÓN 3.1
  ************************************************/
 
 "use strict";
@@ -43,9 +43,9 @@ async function iniciarScanner() {
         scanner = new Html5Qrcode("reader");
 
         await scanner.start(
-    {
-        facingMode: "environment"
-    },
+            {
+                facingMode: "environment"
+            },
             {
                 fps: 10,
                 qrbox: {
@@ -119,7 +119,6 @@ async function codigoDetectado(texto) {
         const parametros = new URLSearchParams();
 
         parametros.append("guia", texto);
-
         parametros.append(
             "usuario",
             document.getElementById("usuario").value
@@ -130,11 +129,19 @@ async function codigoDetectado(texto) {
             body: parametros
         });
 
-        const textoRespuesta = await respuesta.text();
+        const resultado = await respuesta.json();
 
-console.log("Respuesta del servidor:", textoRespuesta);
+        console.log(resultado);
 
-mostrarMensaje(textoRespuesta, "ok");
+        if (resultado.ok) {
+
+            mostrarMensaje(resultado.mensaje, "ok");
+
+        } else {
+
+            mostrarMensaje(resultado.mensaje, "error");
+
+        }
 
     } catch (error) {
 
@@ -155,18 +162,16 @@ mostrarMensaje(textoRespuesta, "ok");
 
 function errorEscaneo(error) {
 
-    // Se ignoran los errores normales del escáner.
+    // Ignorar errores normales del escáner
 
 }
 
-function mostrarMensaje(texto, tipo) {
+function mostrarMensaje(texto, tipo = "ok") {
 
     const mensaje = document.getElementById("mensaje");
 
     mensaje.style.display = "block";
-
     mensaje.className = tipo;
-
     mensaje.textContent = texto;
 
 }
