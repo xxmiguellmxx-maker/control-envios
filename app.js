@@ -53,7 +53,9 @@ async function iniciarScanner() {
             {
                 facingMode: "environment"
             },
-    qrbox: {
+       {
+                fps: 10,
+              qrbox: {
     width: 90,
     height: 260
 }
