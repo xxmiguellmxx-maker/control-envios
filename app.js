@@ -54,8 +54,8 @@ async function iniciarScanner() {
                 facingMode: "environment"
             },
             qrbox: {
-    width: 90,
-    height: 260
+    width: 80,
+    height: 660
 }
             },
             codigoDetectado,
