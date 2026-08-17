@@ -19,7 +19,7 @@ const sonidoDuplicada = new Audio("duplicada.mp3");
 sonidoDuplicada.preload = "auto";
 
 // Número de veces que debe leerse igual
-const LECTURAS_NECESARIAS = 10;
+const LECTURAS_NECESARIAS = 6;
 
 document.addEventListener("DOMContentLoaded", iniciarApp);
 
