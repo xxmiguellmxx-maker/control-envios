@@ -66,8 +66,8 @@ async function iniciarScanner() {
             {
                 fps: 10,
               qrbox: {
-    width: 260,
-    height: 90
+    width: 120,
+    height: 150
 }
             },
             codigoDetectado,
