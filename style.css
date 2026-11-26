@@ -145,3 +145,15 @@ button:disabled{
 #reader[data-paqueteria="ESTAFETA"]::after {
     height: 150px;
 }
+/* Reduce la altura de la cámara en celulares */
+@media (max-width: 600px) {
+  #reader {
+    max-height: 380px;
+    overflow: hidden;
+  }
+
+  #reader video {
+    max-height: 380px;
+    object-fit: cover;
+  }
+}
