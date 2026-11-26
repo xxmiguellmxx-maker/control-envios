@@ -157,7 +157,7 @@ async function iniciarScanner() {
             document.getElementById(
                 "paqueteria"
             ).value;
-
+document.getElementById("reader").dataset.paqueteria = paqueteria;
 
         const configuracion =
             CONFIG_SCANNER[paqueteria];
