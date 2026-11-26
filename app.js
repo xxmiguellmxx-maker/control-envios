@@ -22,7 +22,10 @@ let ultimaGuia = "";
 let ultimaLectura = "";
 
 let lecturasConsecutivas = 0;
-
+const sonidoBeep = new Audio("beep.mp3");
+sonidoBeep.preload = "auto";
+const sonidoDuplicada = new Audio("duplicada.mp3");
+sonidoDuplicada.preload = "auto";
 
 /************************************************
  * CONFIGURACIÓN DE CONFIRMACIÓN
@@ -496,6 +499,13 @@ mostrarMensaje("Registrando guía: " + guiaVisual, "info");
         );
 
 
+if (datos.ok) {
+    sonidoBeep.currentTime = 0;
+    sonidoBeep.play().catch(() => {});
+} else {
+    sonidoDuplicada.currentTime = 0;
+    sonidoDuplicada.play().catch(() => {});
+}
     } catch (error) {
 
         console.error(
