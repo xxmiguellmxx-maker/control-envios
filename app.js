@@ -576,3 +576,9 @@ function mostrarMensaje(
 
     mensaje.className =
         tipo;
+    
+
+    mensaje.textContent =
+        texto;
+
+}
