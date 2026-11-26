@@ -1,95 +1,263 @@
 /************************************************
  * CONTROL DE ENVÍOS
  * APP.JS
- * VERSIÓN 3.3
+ * VERSIÓN 5.0
  ************************************************/
 
 "use strict";
+
+
+/************************************************
+ * VARIABLES
+ ************************************************/
+
 let scanner = null;
+
 let escaneando = false;
+
 let enviando = false;
+
 let ultimaGuia = "";
 
-// NUEVAS VARIABLES
 let ultimaLectura = "";
+
 let lecturasConsecutivas = 0;
-const sonidoBeep = new Audio("beep.mp3");
-sonidoBeep.preload = "auto";
-const sonidoDuplicada = new Audio("duplicada.mp3");
-sonidoDuplicada.preload = "auto";
 
-// Número de veces que debe leerse igual
-const LECTURAS_NECESARIAS = 5;
 
-document.addEventListener("DOMContentLoaded", iniciarApp);
+/************************************************
+ * CONFIGURACIÓN DE CONFIRMACIÓN
+ ************************************************/
+
+const LECTURAS_NECESARIAS = 3;
+
+
+/************************************************
+ * CONFIGURACIÓN DE PAQUETERÍAS
+ ************************************************/
+const CONFIG_SCANNER = {
+    DHL: {
+        formatos: [
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.CODE_93,
+            Html5QrcodeSupportedFormats.ITF,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.CODABAR
+        ],
+        qrbox: {
+            width: 300,
+            height: 120
+        }
+    },
+
+    ESTAFETA: {
+        formatos: [
+            Html5QrcodeSupportedFormats.PDF_417
+        ],
+        qrbox: {
+            width: 300,
+            height: 150
+        }
+    }
+};
+/************************************************
+ * INICIO DE LA APLICACIÓN
+ ************************************************/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    iniciarApp
+);
+
+
+/************************************************
+ * INICIAR APP
+ ************************************************/
 
 function iniciarApp() {
 
-    console.log(CONFIG.APP_NAME);
-    console.log("Versión:", CONFIG.VERSION);
+    console.log("================================");
 
-    const boton = document.getElementById("btnEscanear");
+    console.log(CONFIG.APP_NAME);
+
+    console.log(
+        "Versión:",
+        CONFIG.VERSION
+    );
+
+    console.log(
+        "Scanner dinámico activo"
+    );
+
+    console.log("================================");
+
+
+    const boton =
+        document.getElementById(
+            "btnEscanear"
+        );
+
 
     if (!boton) {
-        console.error("No existe el botón btnEscanear");
+
+        console.error(
+            "No existe el botón btnEscanear"
+        );
+
         return;
+
     }
 
-    boton.addEventListener("click", toggleScanner);
+
+    boton.addEventListener(
+        "click",
+        toggleScanner
+    );
 
 }
+
+
+/************************************************
+ * BOTÓN ESCÁNER
+ ************************************************/
 
 async function toggleScanner() {
 
     console.log("CLICK");
 
+
     if (escaneando) {
+
         await detenerScanner();
+
     } else {
+
         await iniciarScanner();
+
     }
 
 }
+
+
+/************************************************
+ * INICIAR ESCÁNER
+ ************************************************/
 
 async function iniciarScanner() {
 
     try {
 
-        mostrarMensaje("Abriendo cámara...", "ok");
+        const paqueteria =
+            document.getElementById(
+                "paqueteria"
+            ).value;
 
-        scanner = new Html5Qrcode("reader");
 
-        await scanner.start(
-            {
-                facingMode: "environment"
-            },
-            {
-                fps: 10,
-              qrbox: {
-    width: 270,
-    height: 100
-}
-            },
-            codigoDetectado,
-            errorEscaneo
+        const configuracion =
+            CONFIG_SCANNER[paqueteria];
+
+
+        if (!configuracion) {
+
+            mostrarMensaje(
+                "Paquetería no configurada.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "Paquetería seleccionada:",
+            paqueteria
         );
+
+
+        console.log(
+    "Formatos:",
+    configuracion.formatos
+);
+
+
+        mostrarMensaje(
+            "Abriendo cámara...",
+            "ok"
+        );
+
+
+     scanner = new Html5Qrcode(
+    "reader",
+    {
+        formatsToSupport: configuracion.formatos
+    }
+);
+
+     await scanner.start(
+    {
+        facingMode: "environment"
+    },
+    {
+        fps: 8,
+        qrbox: configuracion.qrbox
+    },
+    codigoDetectado,
+    errorEscaneo
+);
 
         escaneando = true;
 
-        document.getElementById("btnEscanear").textContent =
+
+        document
+            .getElementById(
+                "btnEscanear"
+            )
+            .textContent =
             "Detener Escáner";
 
-        mostrarMensaje("Escáner listo.", "ok");
+
+        mostrarMensaje(
+
+            "Escáner " +
+            paqueteria +
+            " listo.",
+
+            "ok"
+
+        );
+
 
     } catch (error) {
 
+        console.error(
+            "ERROR AL INICIAR ESCÁNER:"
+        );
+
         console.error(error);
 
-        mostrarMensaje("No fue posible abrir la cámara.", "error");
+
+        scanner = null;
+
+        escaneando = false;
+
+
+        mostrarMensaje(
+            "No fue posible abrir la cámara.",
+            "error"
+        );
 
     }
 
 }
+
+
+/************************************************
+ * DETENER ESCÁNER
+ ************************************************/
 
 async function detenerScanner() {
 
@@ -98,53 +266,99 @@ async function detenerScanner() {
         if (scanner) {
 
             await scanner.stop();
+
             await scanner.clear();
 
         }
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Error al detener escáner:",
+            error
+        );
 
     }
 
+
     scanner = null;
+
     escaneando = false;
 
-    document.getElementById("reader").innerHTML = "";
 
-    document.getElementById("btnEscanear").textContent =
+    document.getElementById(
+        "reader"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+        "btnEscanear"
+    ).textContent =
         "Iniciar Escáner";
 
-    mostrarMensaje("Escáner detenido.", "ok");
+
+    ultimaLectura = "";
+
+    lecturasConsecutivas = 0;
+
+
+    mostrarMensaje(
+        "Escáner detenido.",
+        "ok"
+    );
 
 }
+
+
+/************************************************
+ * CÓDIGO DETECTADO
+ ************************************************/
 
 async function codigoDetectado(texto) {
-
-    // Si ya estamos enviando una guía, ignorar nuevas lecturas
     if (enviando) return;
-
     texto = texto.trim();
-    
-    // Solo aceptar números
-if (!/^\d+$/.test(texto)) {
-    console.log("Descartado (contiene letras):", texto);
-    return;
+    if (texto === "") return;
+    mostrarMensaje("Código leído: " + texto, "info");
+    console.log("Lectura bruta:", texto);
+mostrarMensaje("Código detectado: " + texto, "info");
+   // FILTRO ESPECIAL PARA DHL
+const paqueteria = document.getElementById("paqueteria").value;
+
+if (paqueteria === "DHL") {
+
+    const digitos = texto.replace(/\D/g, "");
+
+    if (digitos.length !== 10) {
+        console.log("Código DHL ignorado:", texto);
+        return;
+    }
+
+    texto = digitos;
 }
 
-    // ¿Es la misma lectura que la anterior?
+   const guiaVisual = paqueteria === "ESTAFETA"
+    ? texto.replace(/\D/g, "").slice(0, 22)
+    : texto;
+
+document.getElementById("guiaActual").textContent =
+    "Guía detectada: " + guiaVisual;
+
+    /********************************************
+     * COMPROBAR LECTURAS REPETIDAS
+     ********************************************/
+
     if (texto === ultimaLectura) {
 
         lecturasConsecutivas++;
 
     } else {
 
-        // Es una lectura distinta, reiniciar contador
         ultimaLectura = texto;
+
         lecturasConsecutivas = 1;
 
     }
+
 
     console.log(
         "Lectura:",
@@ -153,97 +367,212 @@ if (!/^\d+$/.test(texto)) {
         lecturasConsecutivas
     );
 
-    // Esperar hasta tener varias lecturas iguales
-    if (lecturasConsecutivas < LECTURAS_NECESARIAS) {
-        return;
+
+  /********************************************
+ * ESPERAR CONFIRMACIÓN
+ ********************************************/
+
+if (lecturasConsecutivas < LECTURAS_NECESARIAS) {
+
+    if (paqueteria !== "ESTAFETA") {
+        mostrarMensaje(
+            "Confirmando lectura " +
+            lecturasConsecutivas +
+            "/" +
+            LECTURAS_NECESARIAS,
+            "info"
+        );
     }
 
-    // Evitar registrar dos veces la misma guía
+    return;
+}
+
+
+    /********************************************
+     * EVITAR DUPLICADO LOCAL
+     ********************************************/
+
     if (texto === ultimaGuia) {
+
         return;
+
     }
+
 
     ultimaGuia = texto;
+
     enviando = true;
 
-    mostrarMensaje("Registrando guía...", "ok");
+
+mostrarMensaje("Registrando guía: " + guiaVisual, "info");
+
+
+    /********************************************
+     * ENVIAR AL SERVIDOR
+     ********************************************/
 
     try {
 
-        const parametros = new URLSearchParams();
+        const parametros =
+            new URLSearchParams();
 
-        parametros.append("guia", texto);
+
+        parametros.append(
+            "guia",
+            texto
+        );
+
 
         parametros.append(
             "usuario",
-            document.getElementById("usuario").value
+            document.getElementById(
+                "usuario"
+            ).value
         );
 
-        const respuesta = await fetch(CONFIG.API_URL, {
-            method: "POST",
-            body: parametros
-        });
+
+        const respuesta =
+            await fetch(
+                CONFIG.API_URL,
+                {
+
+                    method: "POST",
+
+                    body: parametros
+
+                }
+            );
+
+
+        console.log(
+            "========== RESPUESTA =========="
+        );
+
+
+        console.log(
+            "Status:",
+            respuesta.status
+        );
+
+
+        console.log(
+            "OK:",
+            respuesta.ok
+        );
+
 
         if (!respuesta.ok) {
-            throw new Error("Error HTTP: " + respuesta.status);
+
+            throw new Error(
+                "Error HTTP: " +
+                respuesta.status
+            );
+
         }
 
-        const datos = await respuesta.json();
 
-        console.log(datos);
+        const datos =
+            await respuesta.json();
+
+
+        console.log(
+            "Respuesta:",
+            datos
+        );
+
+
+        /****************************************
+         * MOSTRAR RESULTADO
+         ****************************************/
 
         mostrarMensaje(
+
             datos.mensaje,
-            datos.ok ? "ok" : "error"
+
+            datos.ok
+                ? "ok"
+                : "error"
+
         );
-if (datos.ok) {
 
-    sonidoBeep.currentTime = 0;
-    sonidoBeep.play().catch(() => {});
 
-} else {
-
-    sonidoDuplicada.currentTime = 0;
-    sonidoDuplicada.play().catch(() => {});
-
-}
     } catch (error) {
+
+        console.error(
+            "========== ERROR =========="
+        );
 
         console.error(error);
 
+
         mostrarMensaje(
-            "ERROR: " + error.message,
+
+            "ERROR: " +
+            error.message,
+
             "error"
+
         );
 
     }
 
-    // Reiniciar variables
+
+    /********************************************
+     * REINICIAR CONFIRMACIÓN
+     ********************************************/
+
     setTimeout(() => {
 
         enviando = false;
+
         ultimaGuia = "";
 
         ultimaLectura = "";
+
         lecturasConsecutivas = 0;
 
-    }, 1000);
+    }, 1200);
 
 }
+
+
+/************************************************
+ * ERRORES NORMALES DEL ESCÁNER
+ ************************************************/
+
 function errorEscaneo(error) {
 
-    // Ignorar errores normales del escáner
+    // Los errores normales de búsqueda
+    // se ignoran intencionalmente.
 
 }
 
-function mostrarMensaje(texto, tipo = "ok") {
 
-    const mensaje = document.getElementById("mensaje");
+/************************************************
+ * MOSTRAR MENSAJES
+ ************************************************/
 
-    if (!mensaje) return;
+function mostrarMensaje(
+    texto,
+    tipo = "ok"
+) {
 
-    mensaje.style.display = "block";
-    mensaje.className = tipo;
-    mensaje.textContent = texto;
+    const mensaje =
+        document.getElementById(
+            "mensaje"
+        );
 
-}
+
+    if (!mensaje) {
+
+        return;
+
+    }
+
+
+    mensaje.style.display =
+        "block";
+
+
+    mensaje.className =
+        tipo;
